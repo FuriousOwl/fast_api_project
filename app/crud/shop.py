@@ -1,24 +1,22 @@
-# Модуль для работы с данными о магазинах
-from models.shop import Osm_point
-from db.base import get_session
-from geoalchemy2.functions import ST_DWithin, ST_AsText
+from geoalchemy2.functions import ST_AsText, ST_DWithin
+
+from models.Points import ShopPoint
 
 
-def get_points():
-    session = get_session()
+def get_points(session):
     subquery = (
-        session.query(Osm_point.osm_id)
+        session.query(ShopPoint.osm_id)
         .filter(
-            ST_DWithin(Osm_point.way, Osm_point.way, 600)
-            & (Osm_point.osm_id != Osm_point.osm_id)
+            ST_DWithin(ShopPoint.way, ShopPoint.way, 600)
+            & (ShopPoint.osm_id != ShopPoint.osm_id)
         )
         .distinct()
     )
 
     query = (
-        session.query(Osm_point.osm_id, Osm_point.shop, ST_AsText(Osm_point.way).label("way"))
-        .filter(~Osm_point.osm_id.in_(subquery))
-        .filter(Osm_point.shop.isnot(None))
+        session.query(ShopPoint.osm_id, ShopPoint.shop, ST_AsText(ShopPoint.way).label("way"))
+        .filter(~ShopPoint.osm_id.in_(subquery))
+        .filter(ShopPoint.shop.isnot(None))
     )
 
     result = query.limit(10).all()

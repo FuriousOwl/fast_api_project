@@ -1,19 +1,17 @@
-from models.shop import Osm_point
-from db.base import get_session
 from geoalchemy2 import WKTElement
 from geoalchemy2.functions import ST_Intersects
 
+from core.constants import Messages
+from models.Points import BuildingPoint, WaterPoint
 
-def post_installation(building_location: str):
-    session = get_session()
+
+def post_installation(session, building_location):
 
     building_geometry = WKTElement(building_location, srid=4326)
 
-    query = session.query(Osm_point).filter(ST_Intersects(building_geometry, Osm_point.way))
+    query = session.query(BuildingPoint).filter(ST_Intersects(building_geometry, WaterPoint.way))
     result = query.all()
-    print(result)
     if result:
-        return {"message": "Установка здания в данном месте невозможна, так как оно пересекается с другими объектами."}
+        return Messages.BUILDING_INSTALLATION_NOT_ALLOWED
     else:
-        return {"message": "Установка здания в данном месте возможна."}
-
+        return Messages.BUILDING_INSTALLATION_ALLOWED

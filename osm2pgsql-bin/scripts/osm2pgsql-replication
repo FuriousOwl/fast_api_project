@@ -19,16 +19,16 @@ See the help of the `init` and `update` command for more information on
 how to use %(prog)s.
 """
 
-from argparse import ArgumentParser, RawDescriptionHelpFormatter
 import datetime as dt
 import json
 import logging
-import sys
 import subprocess
+import sys
 import tempfile
-from textwrap import dedent
-from pathlib import Path
 import urllib.request as urlrequest
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
+from pathlib import Path
+from textwrap import dedent
 
 missing_modules = []
 
@@ -43,9 +43,9 @@ except ImportError:
         missing_modules.append('psycopg2')
 
 try:
+    from osmium import WriteHandler
     from osmium.replication.server import ReplicationServer
     from osmium.replication.utils import get_replication_header
-    from osmium import WriteHandler
 except ImportError:
     missing_modules.append('osmium')
 
